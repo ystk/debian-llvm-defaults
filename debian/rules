@@ -1,0 +1,247 @@
+#! /usr/bin/make -f
+
+# Uncomment this to turn on verbose mode.
+#export DH_VERBOSE=1
+
+# version number of the defaults package
+VDEF	:= $(strip $(shell dpkg-parsechangelog | awk -F: '/^Version:/ {print $$NF}'))
+
+VMAJOR	:= $(shell echo $(VDEF) | awk -F. '{print $$1}')
+VMINOR	:= $(shell echo $(VDEF) | awk -F. '{print $$2}' | sed -e 's/\([0-9]*\).*/\1/')
+REL_EXT	:= $(shell echo $(VDEF) | sed -e 's/^$(VMAJOR)\.$(VMINOR)//')
+
+# llvm-defaults 0.1 is the first version for 2.7.
+REL_NO_27	:= $(shell expr $(VMINOR) - 0)$(REL_EXT)
+
+# llvm-defaults 0.2 is the first version for 2.8.
+REL_NO_28	:= $(shell expr $(VMINOR) - 0)$(REL_EXT)
+
+# llvm-defaults 0.7 is the first version for 2.9.
+REL_NO_29	:= $(shell expr $(VMINOR) - 0)$(REL_EXT)
+
+# llvm-defaults 0.9 is the first version for 3.0.
+REL_NO_30	:= $(shell expr $(VMINOR) - 0)$(REL_EXT)
+
+# llvm-defaults 0.10 is the first version for 3.1.
+REL_NO_31	:= $(shell expr $(VMINOR) - 0)$(REL_EXT)
+
+# llvm-defaults 0.16 is the first version for 3.2.
+REL_NO_32	:= $(shell expr $(VMINOR) - 0)$(REL_EXT)
+
+# llvm-defaults 0.21 is the first version for 3.3.
+REL_NO_33	:= $(shell expr $(VMINOR) - 0)$(REL_EXT)
+
+# llvm-defaults 0.22 is the first version for 3.4.
+REL_NO_34	:= $(shell expr $(VMINOR) - 0)$(REL_EXT)
+
+# llvm-defaults 0.24 is the first version for 3.5.
+REL_NO_35	:= $(shell expr $(VMINOR) - 0)$(REL_EXT)
+
+# minimum required version
+REQV            := (>= 3.5~)
+
+CURRENT_VERSION := 3.5
+
+# architecture dependent variables
+DEB_HOST_ARCH		:= $(shell dpkg-architecture -qDEB_HOST_ARCH)
+DEB_HOST_GNU_TYPE	:= $(shell dpkg-architecture -qDEB_HOST_GNU_TYPE)
+
+# complete version number, including the release
+CV_LLVM		:= 1:$(CURRENT_VERSION)-$(REL_NO_35)
+
+distribution := $(shell lsb_release -is)
+all_packages   := llvm llvm-runtime llvm-dev libllvm-ocaml-dev clang libclang1 libclang-dev
+no_packages    := llvm-gcc # must be built?
+
+LLDB_SUPPORTED=amd64 armel armhf i386  kfreebsd-amd64 kfreebsd-i386 s390 s390x sparc alpha hppa m68k powerpcspe ppc64 sh4 sparc64 x32 powerpc mips mipsel
+ifneq (,$(filter $(DEB_HOST_ARCH),$(LLDB_SUPPORTED)))
+    all_packages += lldb
+else
+    no_packages += lldb
+endif
+
+packages := $(filter-out $(no_packages), $(all_packages))
+
+# derived version number (without release)
+V_LLVM  := $(shell echo $(CV_LLVM) | sed 's/^[0-9]*://' | sed 's/-[^-]*$$//')
+
+# number for the package name
+PV_LLVM := $(shell echo $(V_LLVM) | awk -F. '{printf "%d.%d", $$1, $$2}')
+
+OS_NAME := Linux
+
+ifeq ($(DEB_HOST_ARCH),hurd-i386)
+    OS_NAME	:= Hurd
+endif
+
+ifneq (,$(filter $(DEB_HOST_ARCH),kfreebsd-i386 kfreebsd-amd64))
+    OS_NAME	:= kFreeBSD
+endif
+
+README:
+	m4 -DPACKAGES="$(packages)" \
+	   -DOS_NAME=$(OS_NAME) \
+	   -DDEB_ARCH=$(DEB_HOST_ARCH) \
+	   -DPV_LLVM=$(CURRENT_VERSION) \
+	   debian/README.Debian.m4 > debian/README.Debian.tmp2
+	uniq debian/README.Debian.tmp2 > debian/README.Debian.tmp
+	rm -f debian/README.Debian.tmp2
+	[ -e debian/README.Debian ] \
+	  && cmp -s debian/README.Debian debian/README.Debian.tmp \
+	  && rm -f debian/README.Debian.tmp && exit 0; \
+	  mv debian/README.Debian.tmp debian/README.Debian
+.PHONY: README
+
+substvars:
+	( \
+	  echo 'version:llvm=$(CV_LLVM)'; \
+	  echo 'pv:llvm=$(CURRENT_VERSION)'; \
+	  echo 'reqv:llvm=$(REQV)'; \
+	) > debian/substvars.local
+.PHONY: substvars
+build: build-arch build-indep
+build-arch: build-stamp
+build-indep: build-stamp
+build-stamp:
+	dh_testdir
+	touch build-stamp
+
+clean:
+	dh_testdir
+	dh_testroot
+	rm -f *-stamp
+	rm -f debian/substvars.local
+	dh_clean
+
+install: build README substvars
+	dh_testdir
+	dh_testroot
+	dh_prep
+
+	for p in $(packages); do \
+	  cp -l debian/substvars.local debian/$$p.substvars; \
+	done
+
+	: # llvm
+	dh_installdirs -pllvm \
+		usr/bin usr/share/man/man1
+	for bin in \
+		bugpoint llc llvm-ar llvm-as llvm-bcanalyzer llvm-config \
+		llvm-cov llvm-diff llvm-dis llvm-dwarfdump llvm-extract \
+		llvm-ld llvm-link llvm-mc llvm-nm llvm-objdump llvm-prof \
+		llvm-ranlib llvm-rtdyld llvm-size llvm-tblgen \
+		macho-dump opt ; do \
+		dh_link -pllvm \
+			/usr/lib/llvm-$(PV_LLVM)/bin/$$bin \
+			/usr/bin/$$bin ; \
+	done
+	: # From LLVM 3.6
+	if test $(CURRENT_VERSION) -ge 3.6; then \
+		for bin in \
+			yaml2obj, obj2yaml, verify-uselistorder \
+			; do \
+			dh_link -pllvm \
+				/usr/lib/llvm-$(PV_LLVM)/bin/$$bin \
+				/usr/bin/$$bin ; \
+		done; \
+	fi
+	for man in \
+		bugpoint lit llc llvm-ar llvm-as llvm-bcanalyzer llvm-config \
+		llvm-diff llvm-dis llvm-extract llvm-link llvm-nm \
+		llvm-prof llvm-ranlib opt tblgen ; do \
+		dh_link -pllvm \
+			/usr/share/man/man1/$$man-$(PV_LLVM).1.gz \
+			/usr/share/man/man1/$$man.1.gz ; \
+	done
+
+	: # llvm-runtime
+	dh_installdirs -pllvm-runtime \
+		usr/bin usr/share/man/man1
+	dh_link -pllvm-runtime \
+		/usr/lib/llvm-$(PV_LLVM)/bin/lli /usr/bin/lli
+	dh_link -pllvm-runtime \
+	  /usr/share/man/man1/lli-$(PV_LLVM).1.gz /usr/share/man/man1/lli.1.gz
+
+	: # llvm-dev
+	dh_installdirs -pllvm-dev \
+		/usr/include \
+		/usr/share/vim/addons/syntax/ \
+		/usr/lib
+	dh_link -pllvm-dev \
+		/usr/lib/llvm-$(CURRENT_VERSION)/include/llvm /usr/include/llvm \
+		/usr/lib/llvm-$(CURRENT_VERSION)/include/llvm-c /usr/include/llvm-c \
+		/usr/share/vim/addons/syntax/llvm-$(CURRENT_VERSION).vim /usr/share/vim/addons/syntax/llvm.vim \
+		/usr/share/vim/addons/syntax/tablegen-$(CURRENT_VERSION).vim /usr/share/vim/addons/syntax/tablegen.vim \
+		/usr/share/emacs/site-lisp/llvm-$(CURRENT_VERSION) /usr/share/emacs/site-lisp/llvm
+
+	for lib in \
+		libLTO.so LLVMgold.so; do \
+		dh_link -pllvm-dev \
+		/usr/lib/llvm-$(CURRENT_VERSION)/lib/$$lib /usr/lib/$$lib; \
+	done
+
+
+	: # libllvm-ocaml-dev
+	dh_installdirs -plibllvm-ocaml-dev \
+		/usr/lib/ocaml/METAS
+	dh_link -plibllvm-ocaml-dev \
+		/usr/lib/ocaml/METAS/META.llvm-$(CURRENT_VERSION) /usr/lib/ocaml/METAS/META.llvm \
+		/usr/lib/ocaml/llvm-$(CURRENT_VERSION) /usr/lib/ocaml/llvm
+
+	: # clang
+	dh_installdirs -pclang \
+		usr/bin usr/share/man/man1
+	for bin in \
+		clang clang++ clang-check clang-tblgen c-index-test \
+		clang-apply-replacements clang-tidy pp-trace clang-query \
+		; do \
+		dh_link -pclang \
+			/usr/lib/llvm-$(PV_LLVM)/bin/$$bin \
+			/usr/bin/$$bin ; \
+	done
+	dh_link -pclang \
+			/usr/bin/scan-build-$(PV_LLVM) \
+			/usr/bin/scan-build
+	dh_link -pclang \
+			/usr/bin/scan-view-$(PV_LLVM) \
+			/usr/bin/scan-view
+	dh_link -pclang \
+			/usr/bin/asan_symbolize-$(PV_LLVM) \
+			/usr/bin/asan_symbolize
+	dh_link -plldb \
+			/usr/bin/lldb-$(PV_LLVM) \
+			/usr/bin/lldb
+
+
+nopkgs := $(foreach p, $(no_packages),-N$(p))
+
+binary-indep: build install
+	# nothing to do
+
+binary-arch: build install
+	dh_testdir
+	dh_testroot
+
+	dh_lintian
+	dh_installchangelogs -a $(nopkgs)
+	dh_installdocs -a $(nopkgs) debian/README.Debian
+	for p in $(packages) ; do \
+		if [ -f debian/$$p/usr/share/doc/$$p/changelog ]; then \
+		  mv debian/$$p/usr/share/doc/$$p/changelog \
+	    	debian/$$p/usr/share/doc/$$p/changelog.Debian; \
+		fi; \
+	done
+
+	dh_compress -a $(nopkgs) -X README.Debian
+	dh_fixperms -a $(nopkgs)
+	dh_installdeb -a $(nopkgs)
+
+	for p in $(packages) ; do \
+	  dh_gencontrol -p$$p -u-v$(CV_LLVM) ; \
+	done
+
+	dh_md5sums -a $(nopkgs)
+	dh_builddeb -a $(nopkgs)
+
+binary: binary-indep binary-arch
+.PHONY: build clean binary-indep binary-arch binary install

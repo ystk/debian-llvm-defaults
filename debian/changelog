@@ -1,0 +1,269 @@
+llvm-defaults (0.25) unstable; urgency=medium
+
+  * Fix FTBFS on ppc64el/arm64 (Closes: #765354)
+
+ -- Sylvestre Ledru <sylvestre@debian.org>  Mon, 03 Nov 2014 13:56:35 +0100
+
+llvm-defaults (0.24) unstable; urgency=medium
+
+  * Upload in unstable
+  * Note that lldb is not yet co instalable
+  * Also breaks against clang 3.2 (just in case)
+
+ -- Sylvestre Ledru <sylvestre@debian.org>  Wed, 24 Sep 2014 18:38:55 +0200
+
+llvm-defaults (0.24~exp2) experimental; urgency=medium
+
+  * Also manages lldb
+  * Also breaks/replaces with clang-3.3 (Closes: #758325)
+
+ -- Sylvestre Ledru <sylvestre@debian.org>  Mon, 01 Sep 2014 11:33:45 +0200
+
+llvm-defaults (0.24~exp1) experimental; urgency=medium
+
+  * Default to 3.5 (Thanks to Doko for the patch)
+
+ -- Sylvestre Ledru <sylvestre@debian.org>  Sun, 31 Aug 2014 10:34:39 +0200
+
+llvm-defaults (0.23) unstable; urgency=medium
+
+  * Upload to unstable
+  * Fix a bad link in libllvm-ocaml-dev (Closes: #644101)
+
+  [ Matthias Klose ]
+  * Depend on 3.5 on ppc64el.
+
+ -- Sylvestre Ledru <sylvestre@debian.org>  Sat, 09 Aug 2014 10:52:28 +0200
+
+llvm-defaults (0.23~exp1) experimental; urgency=medium
+
+  * Co installation of clang (Closes: #736057) Manages:
+    - clang
+    - clang++
+    - clang-check
+    - clang-tblgen
+    - c-index-test
+    - clang-apply-replacements
+    - clang-tidy
+    - pp-trace
+    - clang-query
+    - scan-build
+    - scan-view
+  * yaml2obj, obj2yaml, verify-uselistorder will be managed once defaulting
+    to 3.6 (probably Jessie+1)
+  * clang alternatives are managed by this package now
+
+ -- Sylvestre Ledru <sylvestre@debian.org>  Sat, 02 Aug 2014 13:34:59 +0200
+
+llvm-defaults (0.22) unstable; urgency=medium
+
+  * Upload in unstable
+
+ -- Sylvestre Ledru <sylvestre@debian.org>  Sun, 06 Jul 2014 19:23:54 +0200
+
+llvm-defaults (0.22~exp1) experimental; urgency=medium
+
+  * Ack previous NMU. Thanks mate!
+  * Default to LLVM & clang 3.4 for Jessie (Already the case for Ubuntu 14.04)
+
+ -- Sylvestre Ledru <sylvestre@debian.org>  Sun, 27 Apr 2014 13:03:49 -0700
+
+llvm-defaults (0.21+nmu1) unstable; urgency=medium
+
+  * Non-maintainer upload
+  * Handle symlink to directories conversion (Closes: #736311)
+
+ -- David Prévot <taffit@debian.org>  Mon, 14 Apr 2014 20:41:27 -0400
+
+llvm-defaults (0.21) unstable; urgency=low
+
+  * Upload in unstable
+    - ldc does not build with 3.3 but has already 3 rc (See: #730782)
+    - lightspark FTBFS but I reported a patch (See: #730780)
+
+ -- Sylvestre Ledru <sylvestre@debian.org>  Fri, 29 Nov 2013 16:56:59 +0100
+
+llvm-defaults (0.21~exp1) experimental; urgency=low
+
+  * Switch default to 3.3 (Closes: #729925)
+  * Update of the clang descriptions (Closes: #727684)
+  * WIP: Provide libclang1 and libclang-dev virtual packages
+  * Standards-Version updated to 3.9.5
+  * Remove deprecated references to llvm 2.7
+
+ -- Sylvestre Ledru <sylvestre@debian.org>  Tue, 29 Oct 2013 14:59:22 +0100
+
+llvm-defaults (0.20) unstable; urgency=low
+
+  * Handle symlink to directory conversion (Closes: #720149)
+
+ -- Sylvestre Ledru <sylvestre@debian.org>  Wed, 21 Aug 2013 17:57:08 +0200
+
+llvm-defaults (0.19) unstable; urgency=low
+
+  * I forgot that lldb-3.2 is no longer built (we are waiting the 3.3 switch)
+    Disable it for all archs
+
+ -- Sylvestre Ledru <sylvestre@debian.org>  Mon, 01 Jul 2013 18:22:27 +0200
+
+llvm-defaults (0.18) unstable; urgency=low
+
+  [ Adam Conrad ]
+  * Only build lldb metapackage on i386 and amd64 to match the binary.
+
+ -- Sylvestre Ledru <sylvestre@debian.org>  Mon, 01 Jul 2013 13:46:48 +0200
+
+llvm-defaults (0.17) unstable; urgency=low
+
+  * Copy the copyright file for clang & lldb (Closes: #707838)
+  * Update of the lldb description to avoid the empty-binary-package warning.
+  * Replace dh_clean -k by dh_prep
+
+ -- Sylvestre Ledru <sylvestre@debian.org>  Tue, 14 May 2013 12:08:05 +0200
+
+llvm-defaults (0.16) unstable; urgency=low
+
+  * Upload to unstable
+  * Standards-Version updated to 3.9.4
+
+ -- Sylvestre Ledru <sylvestre@debian.org>  Fri, 10 May 2013 10:05:46 +0200
+
+llvm-defaults (0.16~exp2) experimental; urgency=low
+
+  * Introduce the "clang" package which will point to the right version
+  * Introduce the "lldb" package which will point to the right version
+  * Fix the path install in libllvm-ocaml-dev (Closes: #644101)
+  * Remove llvm-ld & llvm-stub manpages (binaries removed)
+    (Closes: #697115)
+
+ -- Sylvestre Ledru <sylvestre@debian.org>  Fri, 01 Mar 2013 15:38:01 +0100
+
+llvm-defaults (0.16~exp1) experimental; urgency=low
+
+  * Switch default to llvm 3.2
+
+ -- Sylvestre Ledru <sylvestre@debian.org>  Wed, 26 Dec 2012 13:15:50 +0100
+
+llvm-defaults (0.15~exp1) experimental; urgency=low
+
+  * Switch default to llvm 3.1 for Jessie(!) (Closes: #677555)
+  * Remove Arthur Loiret from the uploader
+
+ -- Sylvestre Ledru <sylvestre@debian.org>  Wed, 01 Aug 2012 18:43:29 +0200
+
+llvm-defaults (0.14) unstable; urgency=low
+
+  [ Vincent Legout ]
+  * debian/rules: Update symlinks to match binaries and manpages from llvm-3.0
+    instead of llvm-2.7 (Closes: #674896)
+
+ -- Sylvestre Ledru <sylvestre@debian.org>  Mon, 16 Jul 2012 22:39:22 +0200
+
+llvm-defaults (0.13) unstable; urgency=low
+
+  * Fix the symlink bad path. Thanks to Sam Hocevar (Closes: #679468)
+
+ -- Sylvestre Ledru <sylvestre@debian.org>  Fri, 29 Jun 2012 23:51:40 +0200
+
+llvm-defaults (0.12) unstable; urgency=low
+
+  * Add an epoch to fix my mistake with the binary version
+    (Closes: #678684)
+
+ -- Sylvestre Ledru <sylvestre@debian.org>  Sun, 24 Jun 2012 17:50:21 +0200
+
+llvm-defaults (0.11) unstable; urgency=low
+
+  * Actually, 0.10 is too risky for wheezy. Rollback to 3.0 for default
+
+ -- Sylvestre Ledru <sylvestre@debian.org>  Fri, 22 Jun 2012 09:19:22 +0200
+
+llvm-defaults (0.10) unstable; urgency=low
+
+  * Switch default to llvm 3.1 for Wheezy (Closes: #677555)
+
+ -- Sylvestre Ledru <sylvestre@debian.org>  Thu, 21 Jun 2012 22:51:53 +0200
+
+llvm-defaults (0.9) unstable; urgency=low
+
+  * Switch default to llvm 3.0 for Wheezy
+
+ -- Sylvestre Ledru <sylvestre@debian.org>  Sat, 10 Mar 2012 18:42:31 +0100
+
+llvm-defaults (0.8) unstable; urgency=low
+
+  * Incorrect path to libLLVMgold.so (Closes: #655925)
+  * Standards-Version updated to version 3.9.3
+
+ -- Sylvestre Ledru <sylvestre@debian.org>  Wed, 07 Mar 2012 00:45:43 +0100
+
+llvm-defaults (0.7) unstable; urgency=low
+
+  * Switch default to llvm 2.9
+  * llvm-dev depends on llvm (LP: #766215)
+  * Fix warning debian-rules-missing-recommended-target
+  * Switch to dpkg-source 3.0 (quilt) format
+
+ -- Sylvestre Ledru <sylvestre@debian.org>  Sat, 10 Dec 2011 20:34:17 +0100
+
+llvm-defaults (0.6) unstable; urgency=low
+
+  * debian/rules: Depends at least on the version 2.8-6 of llvm
+  * debian/rules: Link /usr/lib/llvm-2.8/lib/libLLVMgold.so to
+                  /usr/lib/libLLVMgold.so
+                  and /usr/lib/llvm-2.8/lib/libLTO.so to
+                  /usr/lib/libLTO.so
+    See bug #631178
+
+ -- Sylvestre Ledru <sylvestre@debian.org>  Sun, 26 Jun 2011 23:44:04 +0200
+
+llvm-defaults (0.5) unstable; urgency=low
+
+  * debian/rules: Depends at least on the version 2.8-4 (Closes: #627344)
+  * debian/control: Update the dependency on libllvm-2.8-ocaml-dev (instead of
+    libllvm-ocaml-2.8-dev) (Closes: #629756)
+
+ -- Sylvestre Ledru <sylvestre@debian.org>  Thu, 19 May 2011 21:46:15 +0200
+
+llvm-defaults (0.4) unstable; urgency=low
+
+  * Change hardcoded values in debian/rules for CURRENT_VERSION
+  * Update of the path for vim
+  * Update the path to META.llvm reflecting the change in llvm-2.8
+    (META.llvm-2.8 => META.llvm-2_8)
+
+ -- Sylvestre Ledru <sylvestre@debian.org>  Tue, 17 May 2011 17:53:32 +0200
+
+llvm-defaults (0.3) unstable; urgency=low
+
+  * Sync from Ubuntu
+  * Add myself to the uploader
+  * Update of the tags Vcs-Svn & Vcs-Browser
+  * Standards-Version updated to 3.9.2
+
+ -- Sylvestre Ledru <sylvestre@debian.org>  Wed, 04 May 2011 18:40:06 +0200
+
+llvm-defaults (0.2ubuntu3) maverick; urgency=low
+
+  * Bump dependencies to the final 2.8 version.
+
+ -- Matthias Klose <doko@ubuntu.com>  Wed, 06 Oct 2010 14:12:02 +0200
+
+llvm-defaults (0.2ubuntu2) maverick; urgency=low
+
+  * Build-depend on m4.
+
+ -- Matthias Klose <doko@ubuntu.com>  Tue, 07 Sep 2010 22:17:09 +0200
+
+llvm-defaults (0.2ubuntu1) maverick; urgency=low
+
+  * Prepare for maverick, default to llvm-2.8.
+
+ -- Matthias Klose <doko@ubuntu.com>  Tue, 07 Sep 2010 21:26:11 +0200
+
+llvm-defaults (0.1) unstable; urgency=low
+
+  * Initial Release.
+
+ -- Arthur Loiret <aloiret@debian.org>  Sun, 15 Aug 2010 20:15:37 +0000
+
